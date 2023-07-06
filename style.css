@@ -1,0 +1,24 @@
+body{
+    min-height: 100vh;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+html{
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+.title-wrapper > div {
+    display: inline-block;
+}
+.title-wrapper{
+   display : grid;
+   height : 30%;
+   font-family: 'Asap', sans-serif;
+   font-size: 1.25rem;
+   width : 100%;
+   justify-content: center;
+   align-items: center;    
+}
