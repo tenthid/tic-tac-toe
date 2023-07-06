@@ -22,3 +22,25 @@ html{
    justify-content: center;
    align-items: center;    
 }
+.form-wrapper{
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+.player-data{
+    height: 35vh;
+    width: 70vw;
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-content: center;
+}
+.player-data > input, .player-data > button{
+    box-sizing: border-box;
+    margin-top: 8%;
+    border-radius: 15px;
+}
+.player-data > input{
+    font-size: 1.5rem;
+    text-indent: 15px;
+}
