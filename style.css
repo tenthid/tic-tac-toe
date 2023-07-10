@@ -1,46 +1,83 @@
-body{
+body {
     min-height: 100vh;
     height: 100vh;
     padding: 0;
     margin: 0;
+    background-color: #0D1117;
+
 }
-html{
+
+html {
     height: 100vh;
     padding: 0;
     margin: 0;
 }
 
-.title-wrapper > div {
+.title-wrapper>div {
     display: inline-block;
 }
-.title-wrapper{
-   display : grid;
-   height : 30%;
-   font-family: 'Asap', sans-serif;
-   font-size: 1.25rem;
-   width : 100%;
-   justify-content: center;
-   align-items: center;    
+
+.title-wrapper {
+    display: grid;
+    height: 30%;
+    color: #E6EDE5;
+    font-family: 'Asap', sans-serif;
+    font-size: 1.25rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }
-.form-wrapper{
+
+.form-wrapper {
     height: 80%;
     display: flex;
     justify-content: center;
     align-content: center;
 }
-.player-data{
-    height: 35vh;
+
+.player-data {
+    height: min(35vh,300px);
     width: 70vw;
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
     justify-content: center;
 }
-.player-data > input, .player-data > button{
+
+.player-data>input,
+.player-data>button {
     box-sizing: border-box;
     margin-top: 8%;
     border-radius: 15px;
 }
-.player-data > input{
-    font-size: 1.5rem;
+
+.player-data>input {
+    color: #E6EDE5;
+    font-size: min(1rem + 2vw, 1.25rem);
     text-indent: 15px;
+    caret-color: #E6EDE5;
+    background-color: #2b3544b0;
+    box-shadow: rgba(57, 56, 56, 0.305) 1.95px 1.95px 2.6px;
+}
+
+.player-data>button {
+    background: linear-gradient(to right,#2b3544b0 50%,transparent  0);
+    background-size: 200% 100%;
+    box-shadow: 0 5px rgb(183, 172, 172);
+    color: #E6EDE5;
+    border-color: rgb(88, 81, 71);
+    background-position: right;
+    transition: background-position 0.3s;
+}
+.player-data > button > div{
+    transition: transform 1s;
+    font-size: 1.5rem;
+    font-weight: 400;
+}
+.player-data > button:hover > div{
+    transform: scale(1.4);
+
+}
+
+.player-data>button:hover {
+    background-position: left;
 }
