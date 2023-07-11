@@ -7,6 +7,9 @@ body {
 
 }
 
+.menu.hide{
+    display : none;
+}
 html {
     height: 100vh;
     padding: 0;
