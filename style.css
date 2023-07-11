@@ -36,7 +36,7 @@ html {
 }
 
 .player-data {
-    height: min(35vh,300px);
+    height: clamp(232px,37vh,270px);
     width: 70vw;
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
