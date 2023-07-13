@@ -7,7 +7,7 @@ body {
 
 }
 
-.menu.hide{
+.hide{
     display : none;
 }
 html {
@@ -81,4 +81,17 @@ html {
 
 .player-data>button:hover {
     background-position: left;
+}
+.game{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.board{
+    display: grid;
+    width : min(80%,314px);
+    aspect-ratio: 1 / 1;
+    background-color: white;
 }
