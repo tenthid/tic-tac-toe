@@ -96,24 +96,34 @@ html {
     justify-content: center;
     align-items: center;
 }
-
-.board {
-    display: grid;
+.board-wrapper{
+    position: relative;
+    box-sizing: border-box;
     width: min(80%, 314px);
     aspect-ratio: 1 / 1;
-    grid-template-rows: 1fr 1fr 1fr;
 }
+.board {
+    display: grid;
+    position: relative;
+    grid-template-rows: 1fr 1fr 1fr;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 
 .board>div {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     position: relative;
+    box-sizing: border-box;
     /* background-color: white; */
 }
 
 .board>div>div {
     border-bottom: solid 5px red;
     border-right: solid 5px red;
+    box-sizing: border-box;
 }
 
 .board>div:nth-last-child(1)>div {
@@ -124,14 +134,17 @@ html {
     border-right: none;
 }
 .board > div > div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color:aqua;
     height: 100%;
     width: 100%;
     position: relative;
     box-sizing: border-box;
     font-size: 4rem;
-    text-align: center;
-    vertical-align: center;
+    /* text-align: center; */
+    /* vertical-align: center; */
 }
 .x::before ,.x::after{
     position: absolute;
@@ -172,4 +185,18 @@ html {
 .score  div {
     font-size: min(1rem + 2vw,1.5rem);
     text-align: center;
+}
+.line{
+    position:absolute;
+    padding:0 ;
+    margin: 0;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: visible;
+}
+.line > * {
+    box-sizing: border-box;
 }

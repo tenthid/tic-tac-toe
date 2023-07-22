@@ -1,6 +1,7 @@
 const playerData = document.getElementById('player-data');
 const menu = document.getElementById('menu');
 const markedBoard = [];
+const board = []
 let turn = 'x';
 
 playerData.addEventListener('submit', evt => {
@@ -13,6 +14,87 @@ function isIndexValid(i, j) {
     const isValid = typeof markedBoard[i] !== 'undefined' && typeof markedBoard[i][j] !== 'undefined';
     return isValid;
 }
+function displayWin() { }
+function addLine(lineType, nodes) {
+    const svg = document.getElementById('line');
+    const ns = 'http://www.w3.org/2000/svg';
+    for (let i = 0; i < nodes.length; i++) {
+        const path = document.createElementNS(ns, 'path');
+        const rect = nodes[i].getBoundingClientRect();
+        let svgPoint, svgPoint2;
+        if (lineType === 'horizontal') {
+            svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
+            svgPoint2 = toSVGPoint(svg, rect.right, rect.bottom - rect.height / 2)
+        }
+        if (lineType === 'vertical') {
+            svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
+            svgPoint2 = toSVGPoint(svg, rect.right - rect.width / 2, rect.bottom);
+        }
+        if (lineType === 'vertical') {
+            svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
+            svgPoint2 = toSVGPoint(svg, rect.right - rect.width / 2, rect.bottom);
+        }
+        if (lineType === 'diagonalRight') {
+            svgPoint = toSVGPoint(svg, rect.left, rect.top);
+            svgPoint2 = toSVGPoint(svg, rect.right, rect.bottom);
+        }
+        if (lineType === 'diagonalLeft') {
+            svgPoint = toSVGPoint(svg, rect.right, rect.top);
+            svgPoint2 = toSVGPoint(svg, rect.left, rect.bottom);
+        }
+        path.setAttribute('d', `M${svgPoint.x} ${svgPoint.y} L${svgPoint2.x} ${svgPoint2.y}`);
+        path.setAttribute('stroke', 'red');
+        path.setAttribute('stroke-linecap', 'square');
+        path.setAttribute('stroke-width', '3');
+        svg.appendChild(path);
+    }
+}
+function checkWinLine(track) {
+    console.log(track);
+    let minRow = Infinity;
+    let maxRow = -Infinity;
+    let minColl = Infinity;
+    let maxColl = -Infinity;
+    let minRowIndex = 0, maxRowIndex = 0;
+    let minCollIndex = 0, maxCollIndex = 0;
+    for (let i = 0; i < track.length; i++) {
+        console.log(track[i][0])
+        if (track[i][0] > maxRow) {
+            maxRow = track[i][0];
+            maxRowIndex = i;
+        }
+        if (track[i][0] < minRow) {
+            console.log('max row run')
+            minRow = track[i][0];
+            minRowIndex = i;
+        }
+        if (track[i][1] > maxColl) {
+            maxColl = track[i][1];
+            maxCollIndex = i;
+        }
+        if (track[i][1] < minColl) {
+            minColl = track[i][1];
+            minCollIndex = i;
+        }
+    }
+    if (track[maxRowIndex][0] === track[minRowIndex][0]) {
+        return 'horizontal';
+    }
+    if (track[maxCollIndex][1] === track[minCollIndex][1]) {
+        return 'vertical';
+    }
+    if (track[maxCollIndex][0] > track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
+        return 'diagonalRight';
+    }
+    if (track[maxCollIndex][0] < track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
+        return 'diagonalLeft';
+    }
+}
+function toSVGPoint(svg, x, y) {
+    const point = new DOMPoint(x, y);
+    return point.matrixTransform(svg.getScreenCTM().inverse());
+}
+
 function checkPos(rowPos, colPos, turn) {
     let isWin = false;
     const track = [
@@ -74,21 +156,26 @@ function checkPos(rowPos, colPos, turn) {
             [0, 0],
             [1, -1]
         ]];
+    let winIndex;
+    let winBoard = [];
     for (let i = 0; i < track.length; i++) {
         for (let j = 0; j < 3; j++) {
             const currentRowPos = rowPos + track[i][j][0];
             const currentColPos = colPos + track[i][j][1];
             if (!isIndexValid(currentRowPos, currentColPos) || markedBoard[currentRowPos][currentColPos] !== turn) {
                 isWin = false;
+                winBoard = [];
                 break;
             }
             else {
+                winIndex = i;
+                winBoard.push(board[currentRowPos][currentColPos]);        
                 isWin = true;
             }
         }
         if (isWin) {
-            console.log('win')
-            return isWin;
+            addLine(checkWinLine(track[winIndex]),winBoard);
+            return displayWin();
         }
     }
 
@@ -107,24 +194,25 @@ function startGame({ player1, player2 }) {
     for (let i = 0; i < 3; i++) {
         const row = document.createElement('div');
         markedBoard.push([]);
+        board.push([]);
         for (let j = 0; j < 3; j++) {
             markedBoard[i].push(null);
             const node = document.createElement('div');
             row.appendChild(node);
-            node.remove
+            board[i].push(node);
             node.addEventListener('click', () => {
                 placeMark(i, j, turn, node);
-                checkPos(i, j,turn);
-                if(turn === 'o'){
+                checkPos(i, j, turn);
+                if (turn === 'o') {
                     turn = 'x';
                 }
-                else{
+                else {
                     turn = 'o';
                 }
             }, { once: true });
         };
+        console.log(board,'board');
         boardWrapper.appendChild(row);
     };
-
 }
 startGame({ player1: 'hello', player2: 'world' });
