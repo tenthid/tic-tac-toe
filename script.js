@@ -5,15 +5,15 @@ const board = [];
 const boardWrapper = document.getElementById('board');
 let turn = 'x';
 const player = {
-    x : {
-        name : '',
-        nodeDisplayer : document.getElementById('player1-score'),
-        score : 0
+    x: {
+        name: '',
+        nodeDisplayer: document.getElementById('player1-score'),
+        score: 0
     },
-    o : {
-        name : '',
-        nodeDisplayer : document.getElementById('player2-score'),
-        score : 0
+    o: {
+        name: '',
+        nodeDisplayer: document.getElementById('player2-score'),
+        score: 0
     }
 }
 
@@ -31,36 +31,37 @@ function displayWin() { }
 function addLine(lineType, nodes) {
     const svg = document.getElementById('line');
     const ns = 'http://www.w3.org/2000/svg';
-    for (let i = 0; i < nodes.length; i++) {
-        const path = document.createElementNS(ns, 'path');
-        const rect = nodes[i].getBoundingClientRect();
-        let svgPoint, svgPoint2;
-        if (lineType === 'horizontal') {
-            svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
-            svgPoint2 = toSVGPoint(svg, rect.right, rect.bottom - rect.height / 2)
-        }
-        if (lineType === 'vertical') {
-            svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
-            svgPoint2 = toSVGPoint(svg, rect.right - rect.width / 2, rect.bottom);
-        }
-        if (lineType === 'vertical') {
-            svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
-            svgPoint2 = toSVGPoint(svg, rect.right - rect.width / 2, rect.bottom);
-        }
-        if (lineType === 'diagonalRight') {
-            svgPoint = toSVGPoint(svg, rect.left, rect.top);
-            svgPoint2 = toSVGPoint(svg, rect.right, rect.bottom);
-        }
-        if (lineType === 'diagonalLeft') {
-            svgPoint = toSVGPoint(svg, rect.right, rect.top);
-            svgPoint2 = toSVGPoint(svg, rect.left, rect.bottom);
-        }
-        path.setAttribute('d', `M${svgPoint.x} ${svgPoint.y} L${svgPoint2.x} ${svgPoint2.y}`);
-        path.setAttribute('stroke', 'red');
-        path.setAttribute('stroke-linecap', 'square');
-        path.setAttribute('stroke-width', '3');
-        svg.appendChild(path);
+    const firstNode = nodes[0];
+    const lastNode = nodes[nodes.length - 1];
+    const path = document.createElementNS(ns, 'path');
+    const rect = firstNode.getBoundingClientRect();
+    const rect2 = lastNode.getBoundingClientRect();
+    let svgPoint, svgPoint2;
+    if (lineType === 'horizontal') {
+        svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
+        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom - rect2.height / 2)
     }
+    if (lineType === 'vertical') {
+        svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
+    }
+    if (lineType === 'vertical') {
+        svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
+    }
+    if (lineType === 'diagonalRight') {
+        svgPoint = toSVGPoint(svg, rect.left, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom);
+    }
+    if (lineType === 'diagonalLeft') {
+        svgPoint = toSVGPoint(svg, rect.right, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.left, rect2.bottom);
+    }
+    path.setAttribute('d', `M${svgPoint.x} ${svgPoint.y} L${svgPoint2.x} ${svgPoint2.y}`);
+    path.setAttribute('stroke', 'red');
+    path.setAttribute('stroke-linecap', 'square');
+    path.setAttribute('stroke-width', '3');
+    svg.appendChild(path);
 }
 function checkWinLine(track) {
     let minRow = Infinity;
@@ -199,19 +200,19 @@ function placeMark(rowPos, colPos, turn, node) {
     markedBoard[rowPos][colPos] = turn;
     node.classList.add(turn);
 }
-function toggleTurn(){
-    if(turn === 'x'){
+function toggleTurn() {
+    if (turn === 'x') {
         turn = 'o';
     }
-    else{
+    else {
         turn = 'x';
     }
 }
 function startGame() {
-    const addBoardClickListener = (i,j) => {
+    const addBoardClickListener = (i, j) => {
         const clickHandler = () => {
             placeMark(i, j, turn, board[i][j]);
-            handlerPlaced(i,j,turn);
+            handlerPlaced(i, j, turn);
             toggleTurn();
         }
         board[i][j].addEventListener('click', clickHandler, { once: true });
@@ -226,12 +227,12 @@ function startGame() {
             const node = document.createElement('div');
             row.appendChild(node);
             board[i].push(node);
-            addBoardClickListener(i,j);
+            addBoardClickListener(i, j);
         };
         boardWrapper.appendChild(row);
     };
 }
-function init({ player1, player2 }){
+function init({ player1, player2 }) {
     const gamePlayer1Name = document.getElementById('player1-name');
     const gamePlayer2Name = document.getElementById('player2-name');
     gamePlayer1Name.innerText = `${player1}(x)`;
