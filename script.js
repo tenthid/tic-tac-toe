@@ -4,6 +4,18 @@ const markedBoard = [];
 const board = [];
 const boardWrapper = document.getElementById('board');
 let turn = 'x';
+const player = {
+    x : {
+        name : '',
+        nodeDisplayer : document.getElementById('player1-score'),
+        score : 0
+    },
+    o : {
+        name : '',
+        nodeDisplayer : document.getElementById('player2-score'),
+        score : 0
+    }
+}
 
 playerData.addEventListener('submit', evt => {
     evt.preventDefault();
@@ -173,6 +185,9 @@ function handlerPlaced(rowPos, colPos, turn) {
         if (isWin) {
             addLine(checkWinLine(track[winIndex]), winBoard);
             displayWin();
+            console.log(player);
+            player[turn].score += 1;
+            player[turn].nodeDisplayer.innerText = player[turn].score;
             //remove all click event listener from child
             const clonedBoard = boardWrapper.cloneNode(true);
             boardWrapper.replaceWith(clonedBoard);
@@ -192,11 +207,7 @@ function toggleTurn(){
         turn = 'x';
     }
 }
-function startGame({ player1, player2 }) {
-    const gamePlayer1Name = document.getElementById('player1-name');
-    const gamePlayer2Name = document.getElementById('player2-name');
-    gamePlayer1Name.innerText = `${player1}(x)`;
-    gamePlayer2Name.innerText = `${player2}(o)`;
+function startGame() {
     const addBoardClickListener = (i,j) => {
         const clickHandler = () => {
             placeMark(i, j, turn, board[i][j]);
@@ -220,4 +231,13 @@ function startGame({ player1, player2 }) {
         boardWrapper.appendChild(row);
     };
 }
-startGame({ player1: 'hello', player2: 'world' });
+function init({ player1, player2 }){
+    const gamePlayer1Name = document.getElementById('player1-name');
+    const gamePlayer2Name = document.getElementById('player2-name');
+    gamePlayer1Name.innerText = `${player1}(x)`;
+    gamePlayer2Name.innerText = `${player2}(o)`;
+    player.x.name = player1;
+    player.o.name = player2;
+    startGame();
+}
+init({ player1: 'hello', player2: 'world' });
