@@ -1,7 +1,8 @@
 const playerData = document.getElementById('player-data');
 const menu = document.getElementById('menu');
 const markedBoard = [];
-const board = []
+const board = [];
+const boardWrapper = document.getElementById('board');
 let turn = 'x';
 
 playerData.addEventListener('submit', evt => {
@@ -188,8 +189,7 @@ function startGame({ player1, player2 }) {
     const gamePlayer2Name = document.getElementById('player2-name');
     gamePlayer1Name.innerText = `${player1}(x)`;
     gamePlayer2Name.innerText = `${player2}(o)`;
-    const boardWrapper = document.getElementById('board');
-    const makeBoardClickHandler = (i,j) => {
+    const addBoardClickListener = (i,j) => {
         const clickHandler = () => {
             placeMark(i, j, turn, board[i][j]);
             handlerPlaced(i,j,turn);
@@ -200,20 +200,19 @@ function startGame({ player1, player2 }) {
                 turn = 'o';
             }
         }
-        return clickHandler;
+        board[i][j].addEventListener('click', clickHandler, { once: true });
     };
     //create 3 * 3 board
     for (let i = 0; i < 3; i++) {
         const row = document.createElement('div');
         markedBoard.push([]);
         board.push([]);
-        // makeBoardRow();
         for (let j = 0; j < 3; j++) {
             markedBoard[i].push(null);
             const node = document.createElement('div');
             row.appendChild(node);
             board[i].push(node);
-            node.addEventListener('click', makeBoardClickHandler(i,j), { once: true });
+            addBoardClickListener(i,j);
         };
         boardWrapper.appendChild(row);
     };
