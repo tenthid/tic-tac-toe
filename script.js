@@ -91,7 +91,7 @@ function toSVGPoint(svg, x, y) {
     const point = new DOMPoint(x, y);
     return point.matrixTransform(svg.getScreenCTM().inverse());
 }
-function checkIsWin(rowPos, colPos, turn) {
+function handlerPlaced(rowPos, colPos, turn) {
     let isWin = false;
     const track = [
         [
@@ -172,13 +172,12 @@ function checkIsWin(rowPos, colPos, turn) {
         if (isWin) {
             addLine(checkWinLine(track[winIndex]), winBoard);
             displayWin();
-            console.log('win');
-            return true
+            //remove all click event listener from child
+            const clonedBoard = boardWrapper.cloneNode(true);
+            boardWrapper.replaceWith(clonedBoard);
         }
 
     }
-    return false;
-
 }
 function placeMark(rowPos, colPos, turn, node) {
     markedBoard[rowPos][colPos] = turn;
@@ -193,14 +192,7 @@ function startGame({ player1, player2 }) {
     const makeBoardClickHandler = (i,j) => {
         const clickHandler = () => {
             placeMark(i, j, turn, board[i][j]);
-            console.log(markedBoard);
-            console.log(i,j)
-            checkIsWin(i, j, turn);
-            if (checkIsWin(i, j, turn)) {
-                console.log('win');
-                const clonedBoard = boardWrapper.cloneNode(true);
-                boardWrapper.replaceWith(clonedBoard);
-            }
+            handlerPlaced(i,j,turn);
             if (turn === 'o') {
                 turn = 'x';
             }
