@@ -184,6 +184,14 @@ function placeMark(rowPos, colPos, turn, node) {
     markedBoard[rowPos][colPos] = turn;
     node.classList.add(turn);
 }
+function toggleTurn(){
+    if(turn === 'x'){
+        turn = 'o';
+    }
+    else{
+        turn = 'x';
+    }
+}
 function startGame({ player1, player2 }) {
     const gamePlayer1Name = document.getElementById('player1-name');
     const gamePlayer2Name = document.getElementById('player2-name');
@@ -193,12 +201,7 @@ function startGame({ player1, player2 }) {
         const clickHandler = () => {
             placeMark(i, j, turn, board[i][j]);
             handlerPlaced(i,j,turn);
-            if (turn === 'o') {
-                turn = 'x';
-            }
-            else {
-                turn = 'o';
-            }
+            toggleTurn();
         }
         board[i][j].addEventListener('click', clickHandler, { once: true });
     };
