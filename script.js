@@ -50,7 +50,6 @@ function addLine(lineType, nodes) {
     }
 }
 function checkWinLine(track) {
-    console.log(track);
     let minRow = Infinity;
     let maxRow = -Infinity;
     let minColl = Infinity;
@@ -58,13 +57,11 @@ function checkWinLine(track) {
     let minRowIndex = 0, maxRowIndex = 0;
     let minCollIndex = 0, maxCollIndex = 0;
     for (let i = 0; i < track.length; i++) {
-        console.log(track[i][0])
         if (track[i][0] > maxRow) {
             maxRow = track[i][0];
             maxRowIndex = i;
         }
         if (track[i][0] < minRow) {
-            console.log('max row run')
             minRow = track[i][0];
             minRowIndex = i;
         }
@@ -94,8 +91,7 @@ function toSVGPoint(svg, x, y) {
     const point = new DOMPoint(x, y);
     return point.matrixTransform(svg.getScreenCTM().inverse());
 }
-
-function checkPos(rowPos, colPos, turn) {
+function checkIsWin(rowPos, colPos, turn) {
     let isWin = false;
     const track = [
         [
@@ -169,15 +165,19 @@ function checkPos(rowPos, colPos, turn) {
             }
             else {
                 winIndex = i;
-                winBoard.push(board[currentRowPos][currentColPos]);        
+                winBoard.push(board[currentRowPos][currentColPos]);
                 isWin = true;
             }
         }
         if (isWin) {
-            addLine(checkWinLine(track[winIndex]),winBoard);
-            return displayWin();
+            addLine(checkWinLine(track[winIndex]), winBoard);
+            displayWin();
+            console.log('win');
+            return true
         }
+
     }
+    return false;
 
 }
 function placeMark(rowPos, colPos, turn, node) {
@@ -190,28 +190,39 @@ function startGame({ player1, player2 }) {
     gamePlayer1Name.innerText = `${player1}(x)`;
     gamePlayer2Name.innerText = `${player2}(o)`;
     const boardWrapper = document.getElementById('board');
+    const makeBoardClickHandler = (i,j) => {
+        const clickHandler = () => {
+            placeMark(i, j, turn, board[i][j]);
+            console.log(markedBoard);
+            console.log(i,j)
+            checkIsWin(i, j, turn);
+            if (checkIsWin(i, j, turn)) {
+                console.log('win');
+                const clonedBoard = boardWrapper.cloneNode(true);
+                boardWrapper.replaceWith(clonedBoard);
+            }
+            if (turn === 'o') {
+                turn = 'x';
+            }
+            else {
+                turn = 'o';
+            }
+        }
+        return clickHandler;
+    };
     //create 3 * 3 board
     for (let i = 0; i < 3; i++) {
         const row = document.createElement('div');
         markedBoard.push([]);
         board.push([]);
+        // makeBoardRow();
         for (let j = 0; j < 3; j++) {
             markedBoard[i].push(null);
             const node = document.createElement('div');
             row.appendChild(node);
             board[i].push(node);
-            node.addEventListener('click', () => {
-                placeMark(i, j, turn, node);
-                checkPos(i, j, turn);
-                if (turn === 'o') {
-                    turn = 'x';
-                }
-                else {
-                    turn = 'o';
-                }
-            }, { once: true });
+            node.addEventListener('click', makeBoardClickHandler(i,j), { once: true });
         };
-        console.log(board,'board');
         boardWrapper.appendChild(row);
     };
 }
