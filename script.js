@@ -2,7 +2,7 @@ const playerData = document.getElementById('player-data');
 const menu = document.getElementById('menu');
 const markedBoard = [];
 const board = [];
-let boardLeft = 0; 
+let boardLeft = 0;
 const boardWrapper = document.getElementById('board');
 let turn = 'x';
 const player = {
@@ -42,18 +42,18 @@ function addLine(track) {
     let svgPoint, svgPoint2;
     if (lineType === 'horizontal') {
         svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
-        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.top + rect.height/ 2)
+        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.top + rect.height / 2)
     }
     if (lineType === 'vertical') {
         svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
         svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
     }
     if (lineType === 'diagonalLeft') {
-        svgPoint = toSVGPoint(svg, rect.left, rect.top);
-        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom);
+        svgPoint = toSVGPoint(svg, rect.right, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.left, rect2.bottom);
     }
     if (lineType === 'diagonalRight') {
-        console.log(rect.top,rect.bottom);
+        console.log(rect.top, rect.bottom);
         svgPoint2 = toSVGPoint(svg, rect.right, rect.top);
         svgPoint = toSVGPoint(svg, rect2.left, rect2.bottom);
     }
@@ -64,7 +64,7 @@ function addLine(track) {
     path.setAttribute('stroke-width', '3');
     svg.appendChild(path);
 }
-function getWinLine(track,rowPos,colPos) {
+function getWinLine(track,collPos, rowPos) {
     let minRow = Infinity;
     let maxRow = -Infinity;
     let minColl = Infinity;
@@ -72,61 +72,61 @@ function getWinLine(track,rowPos,colPos) {
     let minRowIndex = 0, maxRowIndex = 0;
     let minCollIndex = 0, maxCollIndex = 0;
     for (let i = 0; i < track.length; i++) {
-        if (track[i][0] > maxRow) {
-            maxRow = track[i][0];
-            maxRowIndex = i;
+        if (track[i][0] < minColl) {
+            minColl = track[i][0];
+            minCollIndex = i;
         }
-        if (track[i][0] < minRow) {
-            minRow = track[i][0];
-            minRowIndex = i;
-        }
-        if (track[i][1] > maxColl) {
-            maxColl = track[i][1];
+        if (track[i][0] > maxColl) {
+            maxColl = track[i][0];
             maxCollIndex = i;
         }
-        if (track[i][1] < minColl) {
-            minColl = track[i][1];
-            minCollIndex = i;
+        if (track[i][1] > maxRow) {
+            maxRow = track[i][1];
+            maxRowIndex = i;
+        }
+        if (track[i][1] < minRow) {
+            minRow = track[i][1];
+            minRowIndex = i;
         }
     }
     //horizontal
-    if (track[maxRowIndex][0] === track[minRowIndex][0]) {
+    if (track[maxCollIndex][0] === track[minCollIndex][0]) {
         return {
-            xMin : track[minCollIndex][1] + colPos,
-            yMin : rowPos,
-            xMax : track[maxCollIndex][1] + colPos,
-            yMax : rowPos,
-            lineType : 'horizontal'
+            xMin: track[minRowIndex][1] + rowPos,
+            yMin: collPos,
+            xMax: track[maxRowIndex][1] + rowPos,
+            yMax: collPos,
+            lineType: 'horizontal'
         };
     }
     //vertical
-    if (track[maxCollIndex][1] === track[minCollIndex][1]) {
+    if (track[maxRowIndex][1] === track[minRowIndex][1]) {
         return {
-            xMin : colPos,
-            yMin : track[minRowIndex][0] + rowPos,
-            xMax : colPos,
-            yMax : track[maxRowIndex][0] + rowPos,
-            lineType : 'vertical'
+            xMin: rowPos,
+            yMin: track[minCollIndex][0] + collPos,
+            xMax: rowPos,
+            yMax: track[maxCollIndex][0] + collPos,
+            lineType: 'vertical'
         };
     }
     //diagonal from left
-    if (track[maxCollIndex][0] > track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
+    if (track[maxRowIndex][1] > track[minRowIndex][1] && track[maxRowIndex][0] > track[minRowIndex][0]) {
         return {
-            xMin : track[minCollIndex][1] + colPos,
-            yMin : track[minCollIndex][0] + rowPos,
-            xMax : track[maxCollIndex][1] + colPos,
-            yMax : track[maxRowIndex][0] + rowPos,
-            lineType : 'diagonalLeft'
+            xMin: track[minRowIndex][1] + rowPos,
+            yMin: track[minRowIndex][0] + collPos,
+            xMax: track[maxRowIndex][1] + rowPos,
+            yMax: track[maxRowIndex][0] + collPos,
+            lineType: 'diagonalLeft'
         };
     }
     //diagonal from right
-    if (track[maxCollIndex][0] < track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
+    if (track[maxRowIndex][0] < track[minRowIndex][0] && track[maxRowIndex][1] > track[minRowIndex][1]) {
         return {
-            xMin : track[maxCollIndex][1] + colPos,
-            yMin : track[minRowIndex][0] + rowPos,
-            xMax : track[minCollIndex][1] + colPos,
-            yMax : track[maxRowIndex][0] + rowPos,
-            lineType : 'diagonalRight'
+            xMin: track[maxRowIndex][1] + rowPos,
+            yMin: track[maxRowIndex][0] + collPos,
+            xMax: track[minRowIndex][1] + rowPos,
+            yMax: track[minRowIndex][0] + collPos,
+            lineType: 'diagonalLeft'
         };
     }
 }
@@ -134,7 +134,7 @@ function toSVGPoint(svg, x, y) {
     const point = new DOMPoint(x, y);
     return point.matrixTransform(svg.getScreenCTM().inverse());
 }
-function handlerPlaced(rowPos, colPos, turn) {
+function handlerPlaced(collPos, rowPos, turn) {
     let isWin = false;
     const track = [
         [
@@ -200,21 +200,21 @@ function handlerPlaced(rowPos, colPos, turn) {
     boardLeft -= 1;
     for (let i = 0; i < track.length; i++) {
         for (let j = 0; j < 3; j++) {
-            const currentRowPos = rowPos + track[i][j][0];
-            const currentColPos = colPos + track[i][j][1];
-            if (!isIndexValid(currentRowPos, currentColPos) || markedBoard[currentRowPos][currentColPos] !== turn) {
+            const currentRowPos = rowPos + track[i][j][1];
+            const currentCollPos = collPos + track[i][j][0];
+            if (!isIndexValid(currentRowPos, currentCollPos) || markedBoard[currentCollPos][currentRowPos] !== turn) {
                 isWin = false;
                 winBoard = [];
                 break;
             }
             else {
                 winIndex = i;
-                winBoard.push([currentRowPos,currentColPos]);
+                winBoard.push([currentRowPos, currentCollPos]);
                 isWin = true;
             }
         }
         if (isWin) {
-            addLine(getWinLine(track[winIndex],rowPos,colPos));
+            addLine(getWinLine(track[winIndex], collPos,rowPos));
             displayWin();
             console.log(player);
             player[turn].score += 1;
@@ -224,14 +224,14 @@ function handlerPlaced(rowPos, colPos, turn) {
             boardWrapper.replaceWith(clonedBoard);
             return;
         }
-        
+
     }
-    if(boardLeft === 0){
+    if (boardLeft === 0) {
         displayTie();
     }
 }
-function placeMark(rowPos, colPos, turn, node) {
-    markedBoard[rowPos][colPos] = turn;
+function placeMark(collPos, rowPos, turn, node) {
+    markedBoard[collPos][rowPos] = turn;
     node.classList.add(turn);
 }
 function toggleTurn() {
@@ -253,18 +253,18 @@ function startGame() {
     };
     //create 3 * 3 board
     for (let i = 0; i < 3; i++) {
-        const row = document.createElement('div');
+        const coll = document.createElement('div');
         markedBoard.push([]);
         board.push([]);
         for (let j = 0; j < 3; j++) {
             boardLeft += 1;
             markedBoard[i].push(null);
             const node = document.createElement('div');
-            row.appendChild(node);
+            coll.appendChild(node);
             board[i].push(node);
             addBoardClickListener(i, j);
         };
-        boardWrapper.appendChild(row);
+        boardWrapper.appendChild(coll);
     };
 }
 function init({ player1, player2 }) {
