@@ -2,6 +2,7 @@ const playerData = document.getElementById('player-data');
 const menu = document.getElementById('menu');
 const markedBoard = [];
 const board = [];
+let boardLeft = 0; 
 const boardWrapper = document.getElementById('board');
 let turn = 'x';
 const player = {
@@ -28,6 +29,7 @@ function isIndexValid(i, j) {
     return isValid;
 }
 function displayWin() { }
+function displayTie() { }
 function addLine(lineType, nodes) {
     const svg = document.getElementById('line');
     const ns = 'http://www.w3.org/2000/svg';
@@ -168,6 +170,7 @@ function handlerPlaced(rowPos, colPos, turn) {
         ]];
     let winIndex;
     let winBoard = [];
+    boardLeft -= 1;
     for (let i = 0; i < track.length; i++) {
         for (let j = 0; j < 3; j++) {
             const currentRowPos = rowPos + track[i][j][0];
@@ -192,8 +195,12 @@ function handlerPlaced(rowPos, colPos, turn) {
             //remove all click event listener from child
             const clonedBoard = boardWrapper.cloneNode(true);
             boardWrapper.replaceWith(clonedBoard);
+            return;
         }
-
+        
+    }
+    if(boardLeft === 0){
+        displayTie();
     }
 }
 function placeMark(rowPos, colPos, turn, node) {
@@ -223,6 +230,7 @@ function startGame() {
         markedBoard.push([]);
         board.push([]);
         for (let j = 0; j < 3; j++) {
+            boardLeft += 1;
             markedBoard[i].push(null);
             const node = document.createElement('div');
             row.appendChild(node);
