@@ -30,42 +30,41 @@ function isIndexValid(i, j) {
 }
 function displayWin() { }
 function displayTie() { }
-function addLine(lineType, nodes) {
+function addLine(track) {
     const svg = document.getElementById('line');
+    const lineType = track.lineType;
+    console.log(track);
     const ns = 'http://www.w3.org/2000/svg';
-    const firstNode = nodes[0];
-    const lastNode = nodes[nodes.length - 1];
     const path = document.createElementNS(ns, 'path');
-    const rect = firstNode.getBoundingClientRect();
-    const rect2 = lastNode.getBoundingClientRect();
+    console.log(board);
+    const rect = board[track.yMin][track.xMin].getBoundingClientRect();
+    const rect2 = board[track.yMax][track.xMax].getBoundingClientRect();
     let svgPoint, svgPoint2;
     if (lineType === 'horizontal') {
         svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
-        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom - rect2.height / 2)
+        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.top + rect.height/ 2)
     }
     if (lineType === 'vertical') {
         svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
         svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
     }
-    if (lineType === 'vertical') {
-        svgPoint = toSVGPoint(svg, rect.left + rect.width / 2, rect.top);
-        svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
-    }
-    if (lineType === 'diagonalRight') {
+    if (lineType === 'diagonalLeft') {
         svgPoint = toSVGPoint(svg, rect.left, rect.top);
         svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom);
     }
-    if (lineType === 'diagonalLeft') {
-        svgPoint = toSVGPoint(svg, rect.right, rect.top);
-        svgPoint2 = toSVGPoint(svg, rect2.left, rect2.bottom);
+    if (lineType === 'diagonalRight') {
+        console.log(rect.top,rect.bottom);
+        svgPoint2 = toSVGPoint(svg, rect.right, rect.top);
+        svgPoint = toSVGPoint(svg, rect2.left, rect2.bottom);
     }
     path.setAttribute('d', `M${svgPoint.x} ${svgPoint.y} L${svgPoint2.x} ${svgPoint2.y}`);
+    console.log(path);
     path.setAttribute('stroke', 'red');
     path.setAttribute('stroke-linecap', 'square');
     path.setAttribute('stroke-width', '3');
     svg.appendChild(path);
 }
-function checkWinLine(track) {
+function getWinLine(track,rowPos,colPos) {
     let minRow = Infinity;
     let maxRow = -Infinity;
     let minColl = Infinity;
@@ -90,17 +89,45 @@ function checkWinLine(track) {
             minCollIndex = i;
         }
     }
+    //horizontal
     if (track[maxRowIndex][0] === track[minRowIndex][0]) {
-        return 'horizontal';
+        return {
+            xMin : track[minCollIndex][1] + colPos,
+            yMin : rowPos,
+            xMax : track[maxCollIndex][1] + colPos,
+            yMax : rowPos,
+            lineType : 'horizontal'
+        };
     }
+    //vertical
     if (track[maxCollIndex][1] === track[minCollIndex][1]) {
-        return 'vertical';
+        return {
+            xMin : colPos,
+            yMin : track[minRowIndex][0] + rowPos,
+            xMax : colPos,
+            yMax : track[maxRowIndex][0] + rowPos,
+            lineType : 'vertical'
+        };
     }
+    //diagonal from left
     if (track[maxCollIndex][0] > track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
-        return 'diagonalRight';
+        return {
+            xMin : track[minCollIndex][1] + colPos,
+            yMin : track[minCollIndex][0] + rowPos,
+            xMax : track[maxCollIndex][1] + colPos,
+            yMax : track[maxRowIndex][0] + rowPos,
+            lineType : 'diagonalLeft'
+        };
     }
+    //diagonal from right
     if (track[maxCollIndex][0] < track[minCollIndex][0] && track[maxCollIndex][1] > track[minCollIndex][1]) {
-        return 'diagonalLeft';
+        return {
+            xMin : track[maxCollIndex][1] + colPos,
+            yMin : track[minRowIndex][0] + rowPos,
+            xMax : track[minCollIndex][1] + colPos,
+            yMax : track[maxRowIndex][0] + rowPos,
+            lineType : 'diagonalRight'
+        };
     }
 }
 function toSVGPoint(svg, x, y) {
@@ -182,12 +209,12 @@ function handlerPlaced(rowPos, colPos, turn) {
             }
             else {
                 winIndex = i;
-                winBoard.push(board[currentRowPos][currentColPos]);
+                winBoard.push([currentRowPos,currentColPos]);
                 isWin = true;
             }
         }
         if (isWin) {
-            addLine(checkWinLine(track[winIndex]), winBoard);
+            addLine(getWinLine(track[winIndex],rowPos,colPos));
             displayWin();
             console.log(player);
             player[turn].score += 1;
