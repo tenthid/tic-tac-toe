@@ -36,9 +36,10 @@ function addLine(track) {
     console.log(track);
     const ns = 'http://www.w3.org/2000/svg';
     const path = document.createElementNS(ns, 'path');
-    console.log(board);
-    const rect = board[track.yMin][track.xMin].getBoundingClientRect();
-    const rect2 = board[track.yMax][track.xMax].getBoundingClientRect();
+    console.log(board[track.collEnd]);
+    console.log(board[0][0] === board[track.collStart][track.rowEnd])
+    const rect = board[track.collStart][track.rowStart].getBoundingClientRect();
+    const rect2 = board[track.collEnd][track.rowEnd].getBoundingClientRect();
     let svgPoint, svgPoint2;
     if (lineType === 'horizontal') {
         svgPoint = toSVGPoint(svg, rect.left, rect.top + rect.height / 2);
@@ -49,11 +50,11 @@ function addLine(track) {
         svgPoint2 = toSVGPoint(svg, rect2.right - rect2.width / 2, rect2.bottom);
     }
     if (lineType === 'diagonalLeft') {
-        svgPoint = toSVGPoint(svg, rect.right, rect.top);
-        svgPoint2 = toSVGPoint(svg, rect2.left, rect2.bottom);
+        console.log(rect.top, rect.bottom);
+        svgPoint = toSVGPoint(svg, rect.left, rect.top);
+        svgPoint2 = toSVGPoint(svg, rect2.right, rect2.bottom);
     }
     if (lineType === 'diagonalRight') {
-        console.log(rect.top, rect.bottom);
         svgPoint2 = toSVGPoint(svg, rect.right, rect.top);
         svgPoint = toSVGPoint(svg, rect2.left, rect2.bottom);
     }
@@ -92,41 +93,41 @@ function getWinLine(track,collPos, rowPos) {
     //horizontal
     if (track[maxCollIndex][0] === track[minCollIndex][0]) {
         return {
-            xMin: track[minRowIndex][1] + rowPos,
-            yMin: collPos,
-            xMax: track[maxRowIndex][1] + rowPos,
-            yMax: collPos,
+            rowStart: track[minRowIndex][1] + rowPos,
+            collStart: collPos,
+            rowEnd: track[maxRowIndex][1] + rowPos,
+            collEnd: collPos,
             lineType: 'horizontal'
         };
     }
     //vertical
     if (track[maxRowIndex][1] === track[minRowIndex][1]) {
         return {
-            xMin: rowPos,
-            yMin: track[minCollIndex][0] + collPos,
-            xMax: rowPos,
-            yMax: track[maxCollIndex][0] + collPos,
+            rowStart: rowPos,
+            collStart: track[minCollIndex][0] + collPos,
+            rowEnd: rowPos,
+            collEnd: track[maxCollIndex][0] + collPos,
             lineType: 'vertical'
         };
     }
     //diagonal from left
     if (track[maxRowIndex][1] > track[minRowIndex][1] && track[maxRowIndex][0] > track[minRowIndex][0]) {
         return {
-            xMin: track[minRowIndex][1] + rowPos,
-            yMin: track[minRowIndex][0] + collPos,
-            xMax: track[maxRowIndex][1] + rowPos,
-            yMax: track[maxRowIndex][0] + collPos,
+            rowStart: track[minRowIndex][1] + rowPos,
+            collStart: track[minRowIndex][0] + collPos,
+            rowEnd: track[maxRowIndex][1] + rowPos,
+            collEnd: track[maxRowIndex][0] + collPos,
             lineType: 'diagonalLeft'
         };
     }
     //diagonal from right
     if (track[maxRowIndex][0] < track[minRowIndex][0] && track[maxRowIndex][1] > track[minRowIndex][1]) {
         return {
-            xMin: track[maxRowIndex][1] + rowPos,
-            yMin: track[maxRowIndex][0] + collPos,
-            xMax: track[minRowIndex][1] + rowPos,
-            yMax: track[minRowIndex][0] + collPos,
-            lineType: 'diagonalLeft'
+            rowStart: track[maxRowIndex][1] + rowPos,
+            collStart: track[maxRowIndex][0] + collPos,
+            rowEnd: track[minRowIndex][1] + rowPos,
+            collEnd: track[minRowIndex][0] + collPos,
+            lineType: 'diagonalRight'
         };
     }
 }
